@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Mathematics;
@@ -37,6 +37,24 @@ namespace _3d
         float[] colors = {1,1,1};
         float planetSize = 2f;
 
+        static Vector3[] directions = {
+            new Vector3( 0, 1, 0),
+            new Vector3( 0,-1, 0),
+            new Vector3( 1, 0, 0),
+            new Vector3(-1, 0, 0),
+            new Vector3( 0, 0, 1),
+            new Vector3( 0, 0,-1),
+        };
+
+        Vector3[] axis = {
+            new Vector3(directions[0].Y, directions[0].Z, directions[0].X),
+            new Vector3(directions[1].Y, directions[1].Z, directions[1].X),
+            new Vector3(directions[2].Y, directions[2].Z, directions[2].X),
+            new Vector3(directions[3].Y, directions[3].Z, directions[3].X),
+            new Vector3(directions[4].Y, directions[4].Z, directions[4].X),
+            new Vector3(directions[5].Y, directions[5].Z, directions[5].X),
+        };
+
         public Game(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings,nativeWindowSettings) {
             
             for (int x = 0; x < mapResolution; x++) {
@@ -49,51 +67,16 @@ namespace _3d
                         new Vector2(-1.5f+x, -1.5f+y)/(mapResolution-1),
                     };
 
-                    Vector3[] topFace = {
-                        (new Vector3(0,1,0) + (percent[0].X-.5f) * 2 * new Vector3(1,0,0) + (percent[0].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,1,0), new Vector3(1,0,0))).Normalized()*planetSize,
-                        (new Vector3(0,1,0) + (percent[1].X-.5f) * 2 * new Vector3(1,0,0) + (percent[1].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,1,0), new Vector3(1,0,0))).Normalized()*planetSize,
-                        (new Vector3(0,1,0) + (percent[2].X-.5f) * 2 * new Vector3(1,0,0) + (percent[2].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,1,0), new Vector3(1,0,0))).Normalized()*planetSize,
-                        (new Vector3(0,1,0) + (percent[3].X-.5f) * 2 * new Vector3(1,0,0) + (percent[3].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,1,0), new Vector3(1,0,0))).Normalized()*planetSize
-                    };
-                    Vector3[] bottomFace = {
-                        (new Vector3(0,-1,0) + (percent[0].X-.5f) * 2 * new Vector3(-1,0,0) + (percent[0].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,-1,0), new Vector3(-1,0,0))).Normalized()*planetSize,
-                        (new Vector3(0,-1,0) + (percent[1].X-.5f) * 2 * new Vector3(-1,0,0) + (percent[1].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,-1,0), new Vector3(-1,0,0))).Normalized()*planetSize,
-                        (new Vector3(0,-1,0) + (percent[2].X-.5f) * 2 * new Vector3(-1,0,0) + (percent[2].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,-1,0), new Vector3(-1,0,0))).Normalized()*planetSize,
-                        (new Vector3(0,-1,0) + (percent[3].X-.5f) * 2 * new Vector3(-1,0,0) + (percent[3].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,-1,0), new Vector3(-1,0,0))).Normalized()*planetSize
-                    };
-                    Vector3[] leftFace = {
-                        (new Vector3(1,0,0) + (percent[0].X-.5f) * 2 * new Vector3(0,0,1) + (percent[0].Y - .5f) * 2 * Vector3.Cross(new Vector3(1,0,0), new Vector3(0,0,1))).Normalized()*planetSize,
-                        (new Vector3(1,0,0) + (percent[1].X-.5f) * 2 * new Vector3(0,0,1) + (percent[1].Y - .5f) * 2 * Vector3.Cross(new Vector3(1,0,0), new Vector3(0,0,1))).Normalized()*planetSize,
-                        (new Vector3(1,0,0) + (percent[2].X-.5f) * 2 * new Vector3(0,0,1) + (percent[2].Y - .5f) * 2 * Vector3.Cross(new Vector3(1,0,0), new Vector3(0,0,1))).Normalized()*planetSize,
-                        (new Vector3(1,0,0) + (percent[3].X-.5f) * 2 * new Vector3(0,0,1) + (percent[3].Y - .5f) * 2 * Vector3.Cross(new Vector3(1,0,0), new Vector3(0,0,1))).Normalized()*planetSize
-                    };
-                    Vector3[] rightFace = {
-                        (new Vector3(-1,0,0) + (percent[0].X-.5f) * 2 * new Vector3(0,0,-1) + (percent[0].Y - .5f) * 2 * Vector3.Cross(new Vector3(-1,0,0), new Vector3(0,0,-1))).Normalized()*planetSize,
-                        (new Vector3(-1,0,0) + (percent[1].X-.5f) * 2 * new Vector3(0,0,-1) + (percent[1].Y - .5f) * 2 * Vector3.Cross(new Vector3(-1,0,0), new Vector3(0,0,-1))).Normalized()*planetSize,
-                        (new Vector3(-1,0,0) + (percent[2].X-.5f) * 2 * new Vector3(0,0,-1) + (percent[2].Y - .5f) * 2 * Vector3.Cross(new Vector3(-1,0,0), new Vector3(0,0,-1))).Normalized()*planetSize,
-                        (new Vector3(-1,0,0) + (percent[3].X-.5f) * 2 * new Vector3(0,0,-1) + (percent[3].Y - .5f) * 2 * Vector3.Cross(new Vector3(-1,0,0), new Vector3(0,0,-1))).Normalized()*planetSize
-                    };
-                    Vector3[] forwardFace = {
-                        (new Vector3(0,0,1) + (percent[0].X-.5f) * 2 * new Vector3(0,1,0) + (percent[0].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,0,1), new Vector3(0,1,0))).Normalized()*planetSize,
-                        (new Vector3(0,0,1) + (percent[1].X-.5f) * 2 * new Vector3(0,1,0) + (percent[1].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,0,1), new Vector3(0,1,0))).Normalized()*planetSize,
-                        (new Vector3(0,0,1) + (percent[2].X-.5f) * 2 * new Vector3(0,1,0) + (percent[2].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,0,1), new Vector3(0,1,0))).Normalized()*planetSize,
-                        (new Vector3(0,0,1) + (percent[3].X-.5f) * 2 * new Vector3(0,1,0) + (percent[3].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,0,1), new Vector3(0,1,0))).Normalized()*planetSize
-                    };
-                    Vector3[] backwardFace = {
-                        (new Vector3(0,0,-1) + (percent[0].X-.5f) * 2 * new Vector3(0,-1,0) + (percent[0].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,0,-1), new Vector3(0,-1,0))).Normalized()*planetSize,
-                        (new Vector3(0,0,-1) + (percent[1].X-.5f) * 2 * new Vector3(0,-1,0) + (percent[1].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,0,-1), new Vector3(0,-1,0))).Normalized()*planetSize,
-                        (new Vector3(0,0,-1) + (percent[2].X-.5f) * 2 * new Vector3(0,-1,0) + (percent[2].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,0,-1), new Vector3(0,-1,0))).Normalized()*planetSize,
-                        (new Vector3(0,0,-1) + (percent[3].X-.5f) * 2 * new Vector3(0,-1,0) + (percent[3].Y - .5f) * 2 * Vector3.Cross(new Vector3(0,0,-1), new Vector3(0,-1,0))).Normalized()*planetSize
-                    };
-
                     List<Vector3[]> cords = new List<Vector3[]>();
-
-                    cords.Add(topFace);
-                    cords.Add(bottomFace);
-                    cords.Add(leftFace);
-                    cords.Add(rightFace);
-                    cords.Add(forwardFace);
-                    cords.Add(backwardFace);
+                    for (int i = 0; i < 6; i++) {
+                        Vector3[] coord = {
+                            (directions[i] + (percent[0].X-.5f) * 2 * axis[i] + (percent[0].Y - .5f) * 2 * Vector3.Cross(directions[i], axis[i])).Normalized()*planetSize,
+                            (directions[i] + (percent[1].X-.5f) * 2 * axis[i] + (percent[1].Y - .5f) * 2 * Vector3.Cross(directions[i], axis[i])).Normalized()*planetSize,
+                            (directions[i] + (percent[2].X-.5f) * 2 * axis[i] + (percent[2].Y - .5f) * 2 * Vector3.Cross(directions[i], axis[i])).Normalized()*planetSize,
+                            (directions[i] + (percent[3].X-.5f) * 2 * axis[i] + (percent[3].Y - .5f) * 2 * Vector3.Cross(directions[i], axis[i])).Normalized()*planetSize
+                        };
+                        cords.Add(coord);
+                    }
 
                     foreach (Vector3[] coords in cords) {
                         for (int i = 0; i < 4; i++) {
